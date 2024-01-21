@@ -44,9 +44,8 @@ public class VentanaSeguridad extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         titulosAudios = new ArrayList<>();
-        titulosAudios.add("The7Seas.mp3");
-        titulosAudios.add("VikingArena.mp3");
-        titulosAudios.add("TheoryOfEverything.mp3");
+        titulosAudios.add("Chimp Attack 911 Call.mp3");
+        titulosAudios.add("Police release 911 calls after intern is killed by lion.mp3");
 
         JPanel panelNorte = new JPanel(new GridLayout(4, 1));
 
