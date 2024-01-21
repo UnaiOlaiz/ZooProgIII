@@ -298,6 +298,7 @@ public class VentanaEventos extends JFrame{
 		getContentPane().add(pSur, BorderLayout.SOUTH);
 		pSur.add(btnVolver);
 		btnVolver.addActionListener((e)->{
+			detenerVideos();
 			vAnterior.setVisible(true);
 			vActual.dispose();
 		});
@@ -309,12 +310,30 @@ public class VentanaEventos extends JFrame{
 			public void windowOpened(WindowEvent e) {
 				reproducirVideoActual(0);
 			}
+			
 		});
 		
 		video1.setPreferredSize(new Dimension(600, 400));
 		
 		setVisible(true);
 	}
+
+	
+
+	private void detenerVideos() {
+		detener2(video1);
+        detener2(video2);
+        detener2(video3);
+        detener2(video4);
+        detener2(video5);
+	}
+
+	private void detener2(EmbeddedMediaPlayerComponent component) {
+        if (component != null) {
+            component.mediaPlayer().controls().stop();
+            component.release(); // Detiene y libera el recurso del reproductor
+        }
+    }
 
 	protected void reproducirVideoActual(int panelSeleccionado) {
 //        String videoPath = "C:\\Users\\unaio\\Downloads\\DjMaRiiO _ Strip Fifa #2 _ Xf.3gp";

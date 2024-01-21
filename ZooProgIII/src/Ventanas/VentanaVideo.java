@@ -2,6 +2,7 @@ package Ventanas;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop.Action;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,10 +13,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
@@ -56,9 +60,11 @@ public class VentanaVideo extends JFrame{
         btnVolver = new JButton("VOLVER");
         btnVolver.setFont(new Font("Times New Roman", Font.BOLD, 14));
         btnVolver.setForeground(new Color(70, 130, 180));
-        btnVolver.addActionListener((e)->{
-        	vAnterior.setVisible(true);
-        	vActual.dispose();
+        btnVolver.addActionListener((e) -> {
+            System.out.println("Botón Volver presionado");
+            detenerReproduccion();
+            vAnterior.setVisible(true);
+            vActual.dispose();
         });
         pSur = new JPanel();
         pSur.setBackground(new Color(70, 130, 180));
@@ -70,13 +76,22 @@ public class VentanaVideo extends JFrame{
          * y botón, empezará al abrirse la ventana, se detendrá al 
          * cerrarla, ... etc.
          */
+        getContentPane().setFocusable(true);
+        configurarAccionesTeclado();
         
-        addWindowListener(new WindowAdapter() {
+        
+        this.addWindowListener(new WindowAdapter() {
+        	
 			
 			@Override
+			public void windowOpened(WindowEvent e) {
+				btnVolver.requestFocus();
+			}
+
+			@Override
 			public void windowClosing(WindowEvent e) {
-				component.mediaPlayer().controls().stop();
-				component.mediaPlayer().release();
+				System.out.println("Ventana cerrándose");
+				detenerReproduccion();
 				vAnterior.setVisible(true);
 				vActual.dispose();
 			}
@@ -84,7 +99,7 @@ public class VentanaVideo extends JFrame{
 		});
         
         // También programaremos la función de pausar/retomar el vídeo mediante la tecla Space
-        addKeyListener(new KeyAdapter() {
+        getContentPane().addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -127,6 +142,54 @@ public class VentanaVideo extends JFrame{
         lanza("VideoIntro.mp4");
 //        System.out.println(n.discoveredPath());
 		
+	}
+	
+
+    private void togglePlayPause() {
+        if (component.mediaPlayer().status().isPlaying()) {
+            component.mediaPlayer().controls().pause();
+            System.out.println("Vídeo pausado");
+        } else {
+            component.mediaPlayer().controls().play();
+            System.out.println("Vídeo reanudado");
+        }
+    }
+	
+	protected void detenerReproduccion() {
+		if (component != null) {
+			component.mediaPlayer().controls().stop();
+			component.release();
+		}
+		
+	}
+	private void configurarAccionesTeclado() {
+		javax.swing.Action playPauseAccion = new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				togglePlayPause();
+			}
+		};
+		
+		javax.swing.Action volverAccion = new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Botón Volver presionado");
+				detenerReproduccion();
+				vAnterior.setVisible(true);
+				vActual.dispose();
+			}
+		};
+		
+		KeyStroke playPauseKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false);
+        KeyStroke volverKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK, false);
+
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(playPauseKeyStroke, "PlayPause");
+        getRootPane().getActionMap().put("PlayPause", playPauseAccion);
+
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(volverKeyStroke, "Volver");
+        getRootPane().getActionMap().put("Volver", volverAccion);
 	}
 	
 	// Método que lanzará el vídeo
